@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spencer's Bach Party — Sayulita 2026</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --turq:    #0ABAB5;
+      --coral:   #FF6B35;
+      --yellow:  #FFD166;
+      --green:   #2EC4B6;
+      --dark:    #1A1A2E;
+      --cream:   #FFF8F0;
+      --card:    #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #0ABAB5 0%, #FF6B35 60%, #FFD166 100%);
+      padding: 60px 20px 80px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '🌊🌴🌺🌊🌴🌺🌊🌴🌺🌊🌴🌺🌊🌴🌺';
+      position: absolute;
+      top: 10px; left: 0; right: 0;
+      font-size: 1.6rem;
+      letter-spacing: 4px;
+      opacity: 0.35;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '🌊🌴🌺🌊🌴🌺🌊🌴🌺🌊🌴🌺🌊🌴🌺';
+      position: absolute;
+      bottom: 10px; left: 0; right: 0;
+      font-size: 1.6rem;
+      letter-spacing: 4px;
+      opacity: 0.35;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .photo-ring {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      object-fit: cover;
+      margin: 0 auto 20px;
+      display: block;
+    }
+    .photo-placeholder {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      background: rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      margin: 0 auto 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      color: white;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .hero .sub {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.92);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .cd-box {
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(6px);
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 14px;
+      padding: 12px 20px;
+      min-width: 80px;
+      text-align: center;
+    }
+    .cd-box .num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+    }
+    .cd-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.85);
+      margin-top: 4px;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 50px 20px;
+    }
+    .section-title {
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem;
+      color: var(--coral);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .section-title span {
+      display: block;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--turq);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    /* ── ITINERARY ── */
+    .days {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .day-card {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .day-card:hover {
+      border-color: var(--turq);
+      transform: translateY(-2px);
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .day-header .emoji-badge {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .day-header .day-info h3 {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--dark);
+    }
+    .day-header .day-info p {
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 600;
+    }
+    .day-header .chevron {
+      margin-left: auto;
+      font-size: 1.2rem;
+      color: var(--turq);
+      transition: transform 0.3s;
+    }
+    .day-card.open .chevron { transform: rotate(180deg); }
+
+    .day-stripe {
+      height: 6px;
+    }
+    .stripe-thu { background: linear-gradient(90deg, #0ABAB5, #2EC4B6); }
+    .stripe-fri { background: linear-gradient(90deg, #FF6B35, #FF8E53); }
+    .stripe-sat { background: linear-gradient(90deg, #FFD166, #FFBA49); }
+    .stripe-sun { background: linear-gradient(90deg, #06D6A0, #0ABAB5); }
+    .stripe-mon { background: linear-gradient(90deg, #EF476F, #FF6B35); }
+
+    .day-body {
+      display: none;
+      padding: 0 24px 24px;
+    }
+    .day-card.open .day-body { display: block; }
+
+    .events {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .event {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--cream);
+      border-radius: 12px;
+      border-left: 4px solid var(--turq);
+    }
+    .event.highlight { border-left-color: var(--coral); background: #FFF3EE; }
+    .event .event-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+    .event .event-text { flex: 1; }
+    .event .event-time {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--coral);
+      margin-bottom: 2px;
+    }
+    .event .event-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .event .event-detail {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    .event .event-link {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--turq);
+      text-decoration: none;
+      border: 2px solid var(--turq);
+      border-radius: 20px;
+      padding: 2px 10px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .event .event-link:hover { background: var(--turq); color: white; }
+
+    /* ── MAP ── */
+    .map-section {
+      background: white;
+      border-top: 4px solid var(--yellow);
+      border-bottom: 4px solid var(--yellow);
+      padding: 50px 20px;
+    }
+    #map {
+      width: 100%;
+      height: 480px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      border: 3px solid var(--turq);
+      max-width: 960px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* ── QUICK INFO ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .info-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+      border-top: 4px solid var(--turq);
+    }
+    .info-card .ic-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .info-card h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
+    .info-card p { font-weight: 800; font-size: 1rem; color: var(--dark); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.85rem;
+      color: #aaa;
+      background: var(--dark);
+    }
+    footer strong { color: var(--yellow); }
+
+    /* ── DIVIDER ── */
+    .fiesta-divider {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 6px;
+      color: var(--coral);
+      margin: 10px 0;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─────────────── HERO ─────────────── -->
+<div class="hero">
+  <img src="spencer.jpg" alt="Spencer Ord" class="photo-ring"
+       onerror="this.style.display='none';document.getElementById('ph').style.display='flex'" />
+  <div class="photo-placeholder" id="ph" style="display:none">🤵</div>
+  <h1>Spencer's<br>Bach Party</h1>
+  <div class="sub">🇲🇽 Sayulita, Mexico · April 16–20, 2026 🇲🇽</div>
+
+  <div class="countdown-wrap" id="countdown">
+    <div class="cd-box"><div class="num" id="cd-d">--</div><div class="label">Days</div></div>
+    <div class="cd-box"><div class="num" id="cd-h">--</div><div class="label">Hrs</div></div>
+    <div class="cd-box"><div class="num" id="cd-m">--</div><div class="label">Min</div></div>
+    <div class="cd-box"><div class="num" id="cd-s">--</div><div class="label">Sec</div></div>
+  </div>
+</div>
+
+<!-- ─────────────── QUICK INFO ─────────────── -->
+<div class="section">
+  <div class="section-title"><span>The Essentials</span>Trip At a Glance</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="ic-icon">✈️</div><h4>Fly Into</h4><p>PVR — Puerto Vallarta</p></div>
+    <div class="info-card"><div class="ic-icon">📍</div><h4>Base Camp</h4><p>Sayulita, Nayarit</p></div>
+    <div class="info-card"><div class="ic-icon">🗓️</div><h4>Dates</h4><p>Apr 16 – 20, 2026</p></div>
+    <div class="info-card"><div class="ic-icon">🏍️</div><h4>Transport</h4><p>ATVs + Party Bus</p></div>
+    <div class="info-card"><div class="ic-icon">⛵</div><h4>Boat Trip</h4><p>Res# chi-88097118</p></div>
+    <div class="info-card"><div class="ic-icon">🏌️</div><h4>Golf</h4><p>Flamingos Golf Club</p></div>
+  </div>
+</div>
+
+<!-- ─────────────── ITINERARY ─────────────── -->
+<div class="fiesta-divider">🌮 · 🌺 · 🍹 · 🌺 · 🌮</div>
+<div class="section">
+  <div class="section-title"><span>The Plan</span>Daily Itinerary</div>
+  <div class="days">
+
+    <!-- THURSDAY APR 16 -->
+    <div class="day-card open" id="day-thu">
+      <div class="day-stripe stripe-thu"></div>
+      <div class="day-header" onclick="toggleDay('day-thu')">
+        <div class="emoji-badge">🛫</div>
+        <div class="day-info">
+          <h3>Thursday, April 16</h3>
+          <p>Travel Day · Wheels Up</p>
+        </div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="events">
+          <div class="event">
+            <div class="event-icon">🌅</div>
+            <div class="event-text">
+              <div class="event-time">7:38 AM</div>
+              <div class="event-title">SAC → LAX</div>
+              <div class="event-detail">Sacramento to Los Angeles</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">✈️</div>
+            <div class="event-text">
+              <div class="event-time">10:18 AM → 2:23 PM</div>
+              <div class="event-title">LAX → PVR</div>
+              <div class="event-detail">Land in Puerto Vallarta. Samir lands early.</div>
+            </div>
+          </div>
+          <div class="event highlight">
+            <div class="event-icon">🚌</div>
+            <div class="event-text">
+              <div class="event-time">~2:45 PM</div>
+              <div class="event-title">Party Bus to Sayulita</div>
+              <div class="event-detail">Beer &amp; tequila included 🍺🥃 — bus stops at the grocery store. Arrive Sayulita ~4:00 PM.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🏍️</div>
+            <div class="event-text">
+              <div class="event-time">5:00 PM</div>
+              <div class="event-title">ATVs Dropped Off at Airbnb</div>
+              <div class="event-detail">Vroom vroom. Keys in hand. Let chaos begin.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🌮</div>
+            <div class="event-text">
+              <div class="event-time">Evening</div>
+              <div class="event-title">First Night in Sayulita</div>
+              <div class="event-detail">Settle in. Find tacos. Find tequila. Find trouble.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRIDAY APR 17 -->
+    <div class="day-card" id="day-fri">
+      <div class="day-stripe stripe-fri"></div>
+      <div class="day-header" onclick="toggleDay('day-fri')">
+        <div class="emoji-badge">⛵</div>
+        <div class="day-info">
+          <h3>Friday, April 17</h3>
+          <p>Boat Day · Marietas Islands</p>
+        </div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="events">
+          <div class="event highlight">
+            <div class="event-icon">🕖</div>
+            <div class="event-text">
+              <div class="event-time">7:15 AM Check-In</div>
+              <div class="event-title">Chica Locca Tours — Boat Trip</div>
+              <div class="event-detail">
+                Delfines 44, Sayulita · Res# <strong>chi-88097118</strong><br>
+                Marietas Islands tour — snorkeling, hidden beach, open bar vibes 🤿
+              </div>
+              <a class="event-link" href="https://chicaloccatours.com/our-tours/marietas-islands/" target="_blank">Tour Details →</a>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🏝️</div>
+            <div class="event-text">
+              <div class="event-time">All Day</div>
+              <div class="event-title">Marietas Islands</div>
+              <div class="event-detail">Hidden beach, whales (maybe), sea turtles, the good life.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🍹</div>
+            <div class="event-text">
+              <div class="event-time">Afternoon / Evening</div>
+              <div class="event-title">Back in Sayulita</div>
+              <div class="event-detail">Hit the beach bars, grab dinner in town.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SATURDAY APR 18 -->
+    <div class="day-card" id="day-sat">
+      <div class="day-stripe stripe-sat"></div>
+      <div class="day-header" onclick="toggleDay('day-sat')">
+        <div class="emoji-badge">🏌️</div>
+        <div class="day-info">
+          <h3>Saturday, April 18</h3>
+          <p>Golf Day · Flamingos</p>
+        </div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="events">
+          <div class="event highlight">
+            <div class="event-icon">⛳</div>
+            <div class="event-text">
+              <div class="event-time">Morning</div>
+              <div class="event-title">Golf at Flamingos Golf Club</div>
+              <div class="event-detail">Tee time to be booked within 7 days of the date. Nuevo Vallarta area. Tropical greens, ocean views, cold beers in the cart 🍺</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🏍️</div>
+            <div class="event-text">
+              <div class="event-time">Afternoon</div>
+              <div class="event-title">ATV Rip Around Town</div>
+              <div class="event-detail">Post-golf chaos on the ATVs. Find a hidden beach or two.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🥂</div>
+            <div class="event-text">
+              <div class="event-time">Evening</div>
+              <div class="event-title">Big Night Out</div>
+              <div class="event-detail">Sayulita at night. Mezcal. Dancing. You know the vibe.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUNDAY APR 19 -->
+    <div class="day-card" id="day-sun">
+      <div class="day-stripe stripe-sun"></div>
+      <div class="day-header" onclick="toggleDay('day-sun')">
+        <div class="emoji-badge">🏄</div>
+        <div class="day-info">
+          <h3>Sunday, April 19</h3>
+          <p>Beach &amp; Town Day</p>
+        </div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="events">
+          <div class="event">
+            <div class="event-icon">🌊</div>
+            <div class="event-text">
+              <div class="event-time">Morning</div>
+              <div class="event-title">Beach Day</div>
+              <div class="event-detail">Hammocks, ceviche, and Modelo. Maybe two Modelos.</div>
+            </div>
+          </div>
+          <div class="event highlight">
+            <div class="event-icon">🏄</div>
+            <div class="event-text">
+              <div class="event-time">TBD</div>
+              <div class="event-title">Surf Lessons?? 👀</div>
+              <div class="event-detail">Sayulita is a legendary surf town. Lessons TBD — someone's eating sand, guaranteed.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🛍️</div>
+            <div class="event-text">
+              <div class="event-time">Afternoon</div>
+              <div class="event-title">Explore Sayulita Town</div>
+              <div class="event-detail">Wander the market, grab lunch, find a rooftop bar.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🌅</div>
+            <div class="event-text">
+              <div class="event-time">Evening</div>
+              <div class="event-title">Last Night in Mexico</div>
+              <div class="event-detail">Make it count. Spencer's last night as a free man 🫡</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONDAY APR 20 -->
+    <div class="day-card" id="day-mon">
+      <div class="day-stripe stripe-mon"></div>
+      <div class="day-header" onclick="toggleDay('day-mon')">
+        <div class="emoji-badge">🛬</div>
+        <div class="day-info">
+          <h3>Monday, April 20</h3>
+          <p>Departure Day · Hasta Luego</p>
+        </div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="events">
+          <div class="event">
+            <div class="event-icon">🏍️</div>
+            <div class="event-text">
+              <div class="event-time">10:00 AM</div>
+              <div class="event-title">ATVs Picked Up at Airbnb</div>
+              <div class="event-detail">Return the machines. Hope everyone survived.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-icon">🚌</div>
+            <div class="event-text">
+              <div class="event-time">Morning</div>
+              <div class="event-title">Bus Back to PVR</div>
+              <div class="event-detail">Sayulita → Puerto Vallarta International Airport.</div>
+            </div>
+          </div>
+          <div class="event highlight">
+            <div class="event-icon">✈️</div>
+            <div class="event-text">
+              <div class="event-time">3:25 PM</div>
+              <div class="event-title">PVR → LAX → SAC</div>
+              <div class="event-detail">LAX → SAC departs 6:59 PM, arrives 8:31 PM. See you on the other side 🌮→🏠</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─────────────── MAP ─────────────── -->
+<div class="fiesta-divider">🌮 · 🌺 · 🍹 · 🌺 · 🌮</div>
+<div class="map-section">
+  <div class="section" style="padding-top:0">
+    <div class="section-title"><span>Where We're At</span>The Map</div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<!-- ─────────────── FOOTER ─────────────── -->
+<footer>
+  <p>🌮 Viva <strong>Spencer Ord</strong> 🌮</p>
+  <p style="margin-top:8px;font-size:0.75rem;">Sayulita, Mexico · April 16–20, 2026</p>
+</footer>
+
+<script>
+  // ── Countdown ──
+  function updateCountdown() {
+    const target = new Date('2026-04-16T14:23:00-06:00'); // 2:23 PM PVR
+    const now = new Date();
+    const diff = target - now;
+    if (diff <= 0) {
+      document.getElementById('countdown').innerHTML = '<div class="cd-box"><div class="num">🎉</div><div class="label">It\'s Time!</div></div>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ── Accordion ──
+  function toggleDay(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  // ── Map ──
+  const map = L.map('map', { zoomControl: true }).setView([20.80, -105.42], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 18
+  }).addTo(map);
+
+  function makeIcon(emoji, color) {
+    return L.divIcon({
+      html: `<div style="
+        background:${color};
+        border:3px solid white;
+        border-radius:50%;
+        width:42px;height:42px;
+        display:flex;align-items:center;justify-content:center;
+        font-size:1.3rem;
+        box-shadow:0 3px 12px rgba(0,0,0,0.3);
+      ">${emoji}</div>`,
+      className: '',
+      iconSize: [42, 42],
+      iconAnchor: [21, 21],
+      popupAnchor: [0, -24]
+    });
+  }
+
+  const pins = [
+    {
+      // Airbnb — C. Olito 36, Sayulita
+      lat: 20.8746846, lng: -105.4325031,
+      icon: makeIcon('🏠', '#0ABAB5'),
+      title: 'Airbnb — C. Olito 36',
+      detail: 'C. Olito 36, 63734 Sayulita, Nay.<br>Home base. ATVs delivered here 5 PM Thursday.'
+    },
+    {
+      // Chica Locca Tours — Delfines 44, Sayulita
+      lat: 20.8695247, lng: -105.4414259,
+      icon: makeIcon('⛵', '#FF6B35'),
+      title: 'Chica Locca Tours',
+      detail: 'Delfines 44, Sayulita · Res# chi-88097118<br>Check in 7:15 AM Friday · Marietas Islands boat trip<br><a href="https://chicaloccatours.com/our-tours/marietas-islands/" target="_blank" style="color:#0ABAB5">Tour details →</a>'
+    },
+    {
+      // Flamingos Golf — geocoded: 20.7397512, -105.3067345
+      lat: 20.7398, lng: -105.3067,
+      icon: makeIcon('⛳', '#FFD166'),
+      title: 'Flamingos Golf',
+      detail: 'Paseo Central, Mezcales, Bahía de Banderas<br>Saturday golf — tee time TBD (book within 7 days).'
+    },
+    {
+      // WildMex Surf School — on Sayulita beach
+      lat: 20.8710538, lng: -105.4420492,
+      icon: makeIcon('🏄', '#06D6A0'),
+      title: 'WildMex Surf School & Adventure',
+      detail: 'Sayulita beach · Sunday surf lessons<br>4.9 ⭐ (483 reviews)'
+    },
+    {
+      // Marietas Islands — approximate offshore position
+      lat: 20.7050, lng: -105.5600,
+      icon: makeIcon('🏝️', '#9B5DE5'),
+      title: 'Marietas Islands',
+      detail: 'Hidden beach, snorkeling, sea turtles 🐢<br>Friday boat trip destination.'
+    },
+    {
+      // PVR Airport
+      lat: 20.6801, lng: -105.2531,
+      icon: makeIcon('✈️', '#EF476F'),
+      title: 'PVR — Puerto Vallarta Airport',
+      detail: 'Land 2:23 PM Thursday · Depart 3:25 PM Monday.'
+    }
+  ];
+
+  pins.forEach(p => {
+    L.marker([p.lat, p.lng], { icon: p.icon })
+      .addTo(map)
+      .bindPopup(`<strong style="font-family:Nunito,sans-serif;font-size:1rem">${p.title}</strong><br><span style="font-size:0.85rem;font-family:Nunito,sans-serif">${p.detail}</span>`, {
+        maxWidth: 240
+      });
+  });
+</script>
+
+</body>
+</html>
