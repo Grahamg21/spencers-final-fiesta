@@ -62,28 +62,17 @@
       overflow: hidden;
     }
 
-    .photo-ring {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: 6px solid white;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    .hero-couple {
+      width: 100%;
+      max-width: 420px;
+      height: 300px;
       object-fit: cover;
-      margin: 0 auto 20px;
-      display: block;
-    }
-    .photo-placeholder {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: 6px solid white;
+      object-position: center 20%;
+      border-radius: 20px;
+      border: 5px solid white;
       box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-      background: rgba(255,255,255,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      margin: 0 auto 20px;
+      margin: 0 auto 24px;
+      display: block;
     }
 
     .hero h1 {
@@ -320,6 +309,64 @@
     }
     footer strong { color: var(--yellow); }
 
+    /* ── INFO CARD INTERACTIONS ── */
+    .info-card {
+      cursor: pointer;
+      position: relative;
+    }
+    .info-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .info-card.active { border-top-color: var(--coral); background: #FFF3EE; }
+    .card-detail {
+      display: none;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #555;
+      font-weight: 600;
+      line-height: 1.5;
+      border-top: 1px dashed #ddd;
+      padding-top: 8px;
+    }
+    .info-card.active .card-detail { display: block; }
+
+    /* ── VIBES PHOTO ── */
+    .vibes-photo-wrap {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto 0;
+      overflow: hidden;
+      border-radius: 0;
+    }
+    .vibes-photo {
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+    }
+    .vibes-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(26,26,46,0.75));
+      padding: 40px 32px 20px;
+    }
+    .vibes-overlay span {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.3rem;
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    }
+
+    /* ── INLINE PHOTOS ── */
+    .day-photo {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
     /* ── DIVIDER ── */
     .fiesta-divider {
       text-align: center;
@@ -335,9 +382,7 @@
 
 <!-- ─────────────── HERO ─────────────── -->
 <div class="hero">
-  <img src="spencer.jpg" alt="Spencer Ord" class="photo-ring"
-       onerror="this.style.display='none';document.getElementById('ph').style.display='flex'" />
-  <div class="photo-placeholder" id="ph" style="display:none">🤵</div>
+  <img src="spencer/IMG_0985.PNG" alt="Spencer and his fiancée" class="hero-couple" />
   <h1>Spencer's<br>Bach Party</h1>
   <div class="sub">🇲🇽 Sayulita, Mexico · April 16–20, 2026 🇲🇽</div>
 
@@ -353,12 +398,37 @@
 <div class="section">
   <div class="section-title"><span>The Essentials</span>Trip At a Glance</div>
   <div class="info-grid">
-    <div class="info-card"><div class="ic-icon">✈️</div><h4>Fly Into</h4><p>PVR — Puerto Vallarta</p></div>
-    <div class="info-card"><div class="ic-icon">📍</div><h4>Base Camp</h4><p>Sayulita, Nayarit</p></div>
-    <div class="info-card"><div class="ic-icon">🗓️</div><h4>Dates</h4><p>Apr 16 – 20, 2026</p></div>
-    <div class="info-card"><div class="ic-icon">🏍️</div><h4>Transport</h4><p>ATVs + Party Bus</p></div>
-    <div class="info-card"><div class="ic-icon">⛵</div><h4>Boat Trip</h4><p>Res# chi-88097118</p></div>
-    <div class="info-card"><div class="ic-icon">🏌️</div><h4>Golf</h4><p>Flamingos Golf Club</p></div>
+    <div class="info-card" onclick="showCardDetail('pvr')" title="Click for details">
+      <div class="ic-icon">✈️</div><h4>Fly Into</h4><p>PVR — Puerto Vallarta</p>
+      <div class="card-detail" id="pvr">Arrive 2:23 PM Thursday.<br>Depart 3:25 PM Monday.</div>
+    </div>
+    <div class="info-card" onclick="showCardDetail('base')" title="Click for details">
+      <div class="ic-icon">📍</div><h4>Base Camp</h4><p>Sayulita, Nayarit</p>
+      <div class="card-detail" id="base">C. Olito 36, 63734 Sayulita.<br>ATVs dropped off here at 5 PM Thursday.</div>
+    </div>
+    <div class="info-card" onclick="showCardDetail('dates')" title="Click for details">
+      <div class="ic-icon">🗓️</div><h4>Dates</h4><p>Apr 16 – 20, 2026</p>
+      <div class="card-detail" id="dates">4 nights, 5 days.<br>Thu arrival → Mon afternoon flight.</div>
+    </div>
+    <div class="info-card" onclick="showCardDetail('transport')" title="Click for details">
+      <div class="ic-icon">🏍️</div><h4>Transport</h4><p>ATVs + Party Bus</p>
+      <div class="card-detail" id="transport">Party bus PVR→Sayulita (beer & tequila included 🍺).<br>ATVs at Airbnb Thu–Mon 10 AM.</div>
+    </div>
+    <div class="info-card" onclick="showCardDetail('boat')" title="Click for details">
+      <div class="ic-icon">⛵</div><h4>Boat Trip</h4><p>Res# chi-88097118</p>
+      <div class="card-detail" id="boat">Chica Locca Tours · Delfines 44.<br>Check in 7:15 AM Friday.</div>
+    </div>
+    <div class="info-card" onclick="showCardDetail('golf')" title="Click for details">
+      <div class="ic-icon">🏌️</div><h4>Golf</h4><p>Flamingos Golf Club</p>
+      <div class="card-detail" id="golf">Flamingos Golf, Nuevo Vallarta.<br>Tee time TBD — book within 7 days.</div>
+    </div>
+  </div>
+</div>
+
+<div class="vibes-photo-wrap">
+  <img src="spencer/IMG_0981.PNG" alt="Spencer living his best life" class="vibes-photo" />
+  <div class="vibes-overlay">
+    <span>Living his best life since day one</span>
   </div>
 </div>
 
@@ -482,6 +552,7 @@
         <div class="chevron">▼</div>
       </div>
       <div class="day-body">
+        <img src="spencer/IMG_0983.PNG" alt="Spencer on the golf course" class="day-photo" />
         <div class="events">
           <div class="event highlight">
             <div class="event-icon">⛳</div>
@@ -523,7 +594,7 @@
         <div class="chevron">▼</div>
       </div>
       <div class="day-body">
-        <div class="events">
+<div class="events">
           <div class="event">
             <div class="event-icon">🌊</div>
             <div class="event-text">
@@ -604,6 +675,8 @@
   </div>
 </div>
 
+
+
 <!-- ─────────────── MAP ─────────────── -->
 <div class="fiesta-divider">🌮 · 🌺 · 🍹 · 🌺 · 🌮</div>
 <div class="map-section">
@@ -615,6 +688,8 @@
 
 <!-- ─────────────── FOOTER ─────────────── -->
 <footer>
+  <img src="spencer/IMG_0979.PNG" alt="Spencer in his natural habitat" style="width:140px;height:180px;object-fit:cover;object-position:center top;border-radius:12px;border:3px solid #FFD166;margin-bottom:16px;opacity:0.85;" />
+  <p style="font-size:0.7rem;color:#666;margin-bottom:16px;">Spencer in his natural habitat</p>
   <p>🌮 Viva <strong>Spencer Ord</strong> 🌮</p>
   <p style="margin-top:8px;font-size:0.75rem;">Sayulita, Mexico · April 16–20, 2026</p>
 </footer>
@@ -644,6 +719,14 @@
   // ── Accordion ──
   function toggleDay(id) {
     document.getElementById(id).classList.toggle('open');
+  }
+
+  // ── Info card expand ──
+  function showCardDetail(id) {
+    const card = document.getElementById(id).closest('.info-card');
+    const isActive = card.classList.contains('active');
+    document.querySelectorAll('.info-card').forEach(c => c.classList.remove('active'));
+    if (!isActive) card.classList.add('active');
   }
 
   // ── Map ──
